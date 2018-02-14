@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int READ_SMS_PERMISSIONS_REQUEST = 1;
     private static final int SEND_SMS_PERMISSIONS_REQUEST = 1;
     private static final int RECEIVE_SMS_PERMISSIONS_REQUEST = 1;
+    private static final int READ_CONTACTS_PERMISSION_REQUEST = 1;
 
     String SENT = "SMS_SENT";
     String DELIVERED = "SMS_DELIVERED";
@@ -77,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
             getPermissionToReceiveSMS();
+        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            getPermissionToReadContacts();
         }
         else {
             refreshSmsInbox();
@@ -176,6 +180,18 @@ public class MainActivity extends AppCompatActivity {
             }
             requestPermissions(new String[]{Manifest.permission.SEND_SMS},
                    SEND_SMS_PERMISSIONS_REQUEST);
+        }
+    }
+
+    public void getPermissionToReadContacts() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (shouldShowRequestPermissionRationale(
+                    Manifest.permission.READ_CONTACTS)) {
+                Toast.makeText(this, "Please allow permission!", Toast.LENGTH_SHORT).show();
+            }
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
+                    READ_CONTACTS_PERMISSION_REQUEST);
         }
     }
 

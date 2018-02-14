@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -13,10 +14,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
-                  android:launchMode="singleInstance">
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -30,8 +33,10 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ConvosActivity"
-            android:parentActivityName=".MainActivity"></activity>
+        <activity
+            android:name=".ConvosActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".ThreadActivity"></activity>
     </application>
 
 </manifest>
