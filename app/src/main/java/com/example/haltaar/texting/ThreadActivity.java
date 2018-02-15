@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -48,6 +49,7 @@ public class ThreadActivity extends AppCompatActivity {
     BroadcastReceiver smsSentReceiver, smsDeliveredReceiver;
 
     String ContactNumber;
+    Integer ThreadID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,9 @@ public class ThreadActivity extends AppCompatActivity {
 
         sentPI = PendingIntent.getBroadcast(this, 0, new Intent(SENT), 0);
         deliveredPI = PendingIntent.getBroadcast(this, 0, new Intent(DELIVERED), 0);
+        ContactNumber = getIntent().getStringExtra("EXTRA_NUMBER");
+        ThreadID = getIntent().getIntExtra("EXTRA_THREAD_ID", 0);
+        setTitle(getIntent().getStringExtra("EXTRA_NAME") + ": " + ContactNumber);
 
         refreshThread();
 
@@ -119,6 +124,7 @@ public class ThreadActivity extends AppCompatActivity {
         registerReceiver(smsDeliveredReceiver, new IntentFilter(DELIVERED));
 
     }
+
     protected void onPause() {
         super.onPause();
 
@@ -132,31 +138,18 @@ public class ThreadActivity extends AppCompatActivity {
         int indexBody = smsInboxCursor.getColumnIndex("body");
         int indexThreadID = smsInboxCursor.getColumnIndex("thread_id");
 
-        int indexAddress = smsInboxCursor.getColumnIndex("address");
-        Log.d(TAG, "refreshThread: indexAddress initialised");
-
         if (indexBody < 0 || !smsInboxCursor.moveToFirst()) return;
         arrayAdapter.clear();
-        Log.d(TAG, "refreshThread: indexAddress = " + indexAddress);
         do {
-            if (smsInboxCursor.getInt(indexThreadID) == getIntent().getIntExtra("EXTRA_THREAD_ID", 0)) {
+            if (smsInboxCursor.getInt(indexThreadID) == ThreadID) {
                 String messageLine = smsInboxCursor.getString(indexBody);
-                ContactNumber = smsInboxCursor.getString(2);
-                Log.d(TAG, "refreshThread: ContactNumber = " + ContactNumber);
                 arrayAdapter.insert(messageLine, 0);
             }
-            Log.d(TAG, "refreshThread: indexAddress = " + indexAddress);
         } while (smsInboxCursor.moveToNext());
-        Log.d(TAG, "refreshThread: Loop Exit");
-        Log.d(TAG, "refreshThread: indexAddress = " + indexAddress);
-        smsInboxCursor.moveToFirst();
-
-
     }
 
     public void onSendClick(View view) {
         String message = input.getText().toString();
             smsManager.sendTextMessage(ContactNumber, null, message, sentPI  , deliveredPI);
     }
-
 }

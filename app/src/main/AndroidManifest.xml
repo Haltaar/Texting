@@ -33,10 +33,9 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".ConvosActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity android:name=".ThreadActivity"></activity>
+        <activity android:name=".ThreadActivity"
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleInstance"/>
     </application>
 
 </manifest>
