@@ -134,16 +134,37 @@ public class ThreadActivity extends AppCompatActivity {
 
     public void refreshThread() {
         ContentResolver contentResolver = getContentResolver();
-        Cursor smsInboxCursor = contentResolver.query(Uri.parse("content://sms/inbox"), null, null, null, null);
+        Cursor smsInboxCursor = contentResolver.query(Uri.parse("content://sms"), null, null, null, null);
         int indexBody = smsInboxCursor.getColumnIndex("body");
         int indexThreadID = smsInboxCursor.getColumnIndex("thread_id");
-
+        String messageLine = "";
         if (indexBody < 0 || !smsInboxCursor.moveToFirst()) return;
         arrayAdapter.clear();
         do {
             if (smsInboxCursor.getInt(indexThreadID) == ThreadID) {
-                String messageLine = smsInboxCursor.getString(indexBody);
+                Log.d(TAG, "refreshThread: type: " + smsInboxCursor.getInt(8));
+                if (smsInboxCursor.getInt(9) == 1){ //checking type for sent or recieved
+                    messageLine = getIntent().getStringExtra("EXTRA_NAME") + ": " + smsInboxCursor.getString(indexBody);
+                }
+                else if (smsInboxCursor.getInt(9) == 2){
+                    messageLine = "Me: " + smsInboxCursor.getString(indexBody);
+
+                }
                 arrayAdapter.insert(messageLine, 0);
+                Log.d(TAG, "0:" + smsInboxCursor.getString(0) +
+                        "   1:" + smsInboxCursor.getString(1) +
+                        "   2:" + smsInboxCursor.getString(2) +
+                        "   3:" + smsInboxCursor.getString(3) +
+                        "   4:" + smsInboxCursor.getString(4) +
+                        "   5:" + smsInboxCursor.getString(5) +
+                        "   6:" + smsInboxCursor.getString(6) +
+                        "   7:" + smsInboxCursor.getString(7) +
+                        "   8:" + smsInboxCursor.getString(8) +
+                        "   9:" + smsInboxCursor.getString(9) +
+                        "   10:" + smsInboxCursor.getString(10) +
+                        "   11:" + smsInboxCursor.getString(11) +
+                        "   12:" + smsInboxCursor.getString(12) +
+                        "   13:" + smsInboxCursor.getString(13));
             }
         } while (smsInboxCursor.moveToNext());
     }

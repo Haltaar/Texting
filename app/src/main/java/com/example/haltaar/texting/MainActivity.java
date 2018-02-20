@@ -121,6 +121,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
         } while (smsInboxCursor.moveToNext());
+
+        Cursor smsConvoCursor = contentResolver.query(Uri.parse("content://sms/conversations"), null, null, null, null);
+        if(!smsConvoCursor.moveToFirst()) return;
+        do{
+            Log.d(TAG, "0:" + smsConvoCursor.getString(0) +
+                    "\n1:" + smsConvoCursor.getString(1) +
+                    "\n2:" + smsConvoCursor.getString(2));
+        }while (smsConvoCursor.moveToNext());
+
     }
 
     public static String getContactName(Context context, String phoneNo) {
