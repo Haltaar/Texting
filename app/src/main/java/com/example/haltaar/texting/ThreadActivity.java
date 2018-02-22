@@ -36,6 +36,8 @@ public class ThreadActivity extends AppCompatActivity {
 
     private static final String TAG = "ThreadActivity";
 
+    private static ThreadActivity inst;
+    public static boolean active = false;
 
     ArrayList<String> smsMessagesList = new ArrayList<>();
     ListView messages;
@@ -71,8 +73,15 @@ public class ThreadActivity extends AppCompatActivity {
 
     }
 
+    public void onStart() {
+        super.onStart();
+        inst = this;
+    }
+
     protected void onResume() {
         super.onResume();
+
+        active = true;
 
         smsSentReceiver = new BroadcastReceiver() {
             @Override
@@ -128,8 +137,14 @@ public class ThreadActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
+        active = false;
+
         unregisterReceiver(smsDeliveredReceiver);
         unregisterReceiver(smsSentReceiver);
+    }
+
+    public static ThreadActivity instance() {
+        return inst;
     }
 
     public void refreshThread() {

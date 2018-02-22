@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -12,6 +13,9 @@ import android.widget.Toast;
  */
 
 public class SMSBroadcastReceiver extends BroadcastReceiver {
+
+    private static final String TAG = "SMSBroadcastReceiver";
+
 
     public static final String SMS_BUNDLE = "pdus";
 
@@ -36,12 +40,11 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
 
             if (MainActivity.active) {
                 MainActivity inst = MainActivity.instance();
-                inst.updateInbox(smsMessageStr);
-            } else {
-                Intent i = new Intent(context, MainActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(i);
-
+                Log.d(TAG, "onReceive: Calling refreshConvos()");
+                inst.refreshConvos();
+            } else if (ThreadActivity.active) {
+                ThreadActivity inst = ThreadActivity.instance();
+                inst.refreshThread();
             }
         }
     }

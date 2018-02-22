@@ -21,7 +21,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -51,12 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        active = true;
-        inst = this;
-    }
+
 
     public static MainActivity instance() {
         return inst;
@@ -97,25 +91,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void updateInbox(final String smsMessage) {
-        arrayAdapter.insert(smsMessage, 0);
-        arrayAdapter.notifyDataSetChanged();
-    }
-
     public void refreshConvos() {
+        Log.d(TAG, "refreshConvos: starting...");
         ContentResolver contentResolver = getContentResolver();
-        Cursor smsInboxCursor = contentResolver.query(Uri.parse("content://sms/inbox"), null, null, null, null);
+        Cursor smsInboxCursor = contentResolver.query(Uri.parse("content://sms/inbox"), null, null, null, "date DESC");
 
         int indexThreadID = smsInboxCursor.getColumnIndex("thread_id");
         int indexAddress = smsInboxCursor.getColumnIndex("address");
         if (indexThreadID < 0 || !smsInboxCursor.moveToFirst()) return;
         arrayAdapter.clear();
+        threads.clear();
         do {
+            Log.d(TAG, "refreshConvos: looping...");
             if (!threads.contains(smsInboxCursor.getInt(indexThreadID))) {
                 threads.add(smsInboxCursor.getInt(indexThreadID));
                 numbers.add(smsInboxCursor.getString(indexAddress));
                 String str = getContactName(this, smsInboxCursor.getString(indexAddress)) +
                         "\n Thread ID:" + smsInboxCursor.getString(indexThreadID) + "\n";
+                Log.d(TAG, "refreshConvos: adding entry!");
                 arrayAdapter.add(str);
 
             }
@@ -151,9 +144,18 @@ public class MainActivity extends AppCompatActivity {
         return Name;
     }
 
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        inst = this;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+
+        active = true;
 
         smsSentReceiver = new BroadcastReceiver() {
             @Override
@@ -202,6 +204,16 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(smsSentReceiver, new IntentFilter(SENT));
         registerReceiver(smsDeliveredReceiver, new IntentFilter(DELIVERED));
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        active = false;
+
+        unregisterReceiver(smsDeliveredReceiver);
+        unregisterReceiver(smsSentReceiver);
     }
 
     public void getPermissionToReadSMS() {
@@ -269,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
                                            @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult: grantResults.length = " + grantResults.length);
-        // Make sure it's our original READ_CONTACTS request
+
         if (requestCode == MULTIPLE_PERMISSIONS_REQUEST) {
             if(grantResults.length == 4 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED &&
@@ -281,43 +293,8 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Permissions Denied", Toast.LENGTH_SHORT).show();
             }
-//        } else if (requestCode == READ_SMS_PERMISSIONS_REQUEST) {
-//            if (grantResults.length == 1 &&
-//                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(this, "Read SMS permission granted", Toast.LENGTH_SHORT).show();
-//                refreshConvos();
-//            } else {
-//                Toast.makeText(this, "Read SMS permission denied", Toast.LENGTH_SHORT).show();
-//            }
-//
-//        } else if (requestCode == SEND_SMS_PERMISSIONS_REQUEST) {
-//            if (grantResults.length == 1 &&
-//                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(this, "Send SMS permission granted", Toast.LENGTH_SHORT).show();
-//                refreshConvos();
-//            } else {
-//                Toast.makeText(this, "Send SMS permission denied", Toast.LENGTH_SHORT).show();
-//            }
-//
-//        } else if (requestCode == RECEIVE_SMS_PERMISSIONS_REQUEST) {
-//            if (grantResults.length == 1 &&
-//                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(this, "Receive SMS permission granted", Toast.LENGTH_SHORT).show();
-//                refreshConvos();
-//            } else {
-//                Toast.makeText(this, "Receive SMS permission denied", Toast.LENGTH_SHORT).show();
-//            }
-
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-    }
-    
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        unregisterReceiver(smsDeliveredReceiver);
-        unregisterReceiver(smsSentReceiver);
     }
 }
