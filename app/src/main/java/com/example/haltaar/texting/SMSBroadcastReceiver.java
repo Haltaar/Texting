@@ -40,7 +40,6 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
 
             if (MainActivity.active) {
                 MainActivity inst = MainActivity.instance();
-                Log.d(TAG, "onReceive: Calling refreshConvos()");
                 inst.refreshConvos();
             } else if (ThreadActivity.active) {
                 ThreadActivity inst = ThreadActivity.instance();

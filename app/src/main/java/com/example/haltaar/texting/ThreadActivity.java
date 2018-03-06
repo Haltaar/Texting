@@ -1,6 +1,5 @@
 package com.example.haltaar.texting;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -8,29 +7,26 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.ContactsContract;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
+import org.w3c.dom.Text;
 
-import static java.sql.Types.NULL;
+import java.util.ArrayList;
 
 public class ThreadActivity extends AppCompatActivity {
 
@@ -59,6 +55,7 @@ public class ThreadActivity extends AppCompatActivity {
         setContentView(R.layout.activity_thread);
 
         messages = (ListView) findViewById(R.id.messages);
+        registerForContextMenu(messages);
         input = (EditText) findViewById(R.id.input);
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, smsMessagesList);
         messages.setAdapter(arrayAdapter);
@@ -70,6 +67,20 @@ public class ThreadActivity extends AppCompatActivity {
         setTitle(getIntent().getStringExtra("EXTRA_NAME") + ": " + ContactNumber);
 
         refreshThread();
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_crypt_context, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        return super.onContextItemSelected(item);
+
+        //TODO
 
     }
 
@@ -187,5 +198,13 @@ public class ThreadActivity extends AppCompatActivity {
     public void onSendClick(View view) {
         String message = input.getText().toString();
             smsManager.sendTextMessage(ContactNumber, null, message, sentPI  , deliveredPI);
+    }
+
+    public void onCeasarClick(View view){
+        String msg = input.getText().toString();
+        Log.d(TAG, "onCeasarClick: msg: " + msg);
+        String msgCrypt = ciphers.caesar(msg, 13);
+        Log.d(TAG, "onCeasarClick: msgCrypt: " + msgCrypt);
+        input.setText(msgCrypt);
     }
 }
