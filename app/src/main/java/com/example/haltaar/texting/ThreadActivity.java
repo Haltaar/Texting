@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -78,10 +79,14 @@ public class ThreadActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        return super.onContextItemSelected(item);
-
-        //TODO
-
+        if (item.getItemId() == 2131165243){ //checking that item id is correct for the message list
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+            smsMessagesList.set(info.position, ciphers.caesar(smsMessagesList.get(info.position), 32));
+            arrayAdapter.notifyDataSetChanged();
+            return true;
+        }
+        else
+            return false;
     }
 
     public void onStart() {
@@ -168,8 +173,7 @@ public class ThreadActivity extends AppCompatActivity {
         arrayAdapter.clear();
         do {
             if (smsInboxCursor.getInt(indexThreadID) == ThreadID) {
-                Log.d(TAG, "refreshThread: type: " + smsInboxCursor.getInt(8));
-                if (smsInboxCursor.getInt(9) == 1){ //checking type for sent or recieved
+                if (smsInboxCursor.getInt(9) == 1){ //checking type for sent or received
                     messageLine = getIntent().getStringExtra("EXTRA_NAME") + ": " + smsInboxCursor.getString(indexBody);
                 }
                 else if (smsInboxCursor.getInt(9) == 2){
@@ -177,20 +181,7 @@ public class ThreadActivity extends AppCompatActivity {
 
                 }
                 arrayAdapter.insert(messageLine, 0);
-                Log.d(TAG, "0:" + smsInboxCursor.getString(0) +
-                        "   1:" + smsInboxCursor.getString(1) +
-                        "   2:" + smsInboxCursor.getString(2) +
-                        "   3:" + smsInboxCursor.getString(3) +
-                        "   4:" + smsInboxCursor.getString(4) +
-                        "   5:" + smsInboxCursor.getString(5) +
-                        "   6:" + smsInboxCursor.getString(6) +
-                        "   7:" + smsInboxCursor.getString(7) +
-                        "   8:" + smsInboxCursor.getString(8) +
-                        "   9:" + smsInboxCursor.getString(9) +
-                        "   10:" + smsInboxCursor.getString(10) +
-                        "   11:" + smsInboxCursor.getString(11) +
-                        "   12:" + smsInboxCursor.getString(12) +
-                        "   13:" + smsInboxCursor.getString(13));
+
             }
         } while (smsInboxCursor.moveToNext());
     }
@@ -202,9 +193,7 @@ public class ThreadActivity extends AppCompatActivity {
 
     public void onCeasarClick(View view){
         String msg = input.getText().toString();
-        Log.d(TAG, "onCeasarClick: msg: " + msg);
         String msgCrypt = ciphers.caesar(msg, 13);
-        Log.d(TAG, "onCeasarClick: msgCrypt: " + msgCrypt);
         input.setText(msgCrypt);
     }
 }

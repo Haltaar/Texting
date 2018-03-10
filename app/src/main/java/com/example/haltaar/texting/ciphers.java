@@ -20,27 +20,34 @@ public class ciphers {
         int len = msg.length();
         StringBuilder result = new StringBuilder(len);
 
-        for (int i = 0; i < len; i++){
-            char c_temp = (char)(msg.charAt(i) + shift);
+        if (shift > 26) {
+            shift = shift % 26;
+        }
 
-            if (Character.isLetter(msg.charAt(i))) {
-                if (c_temp > 'z') {
-                    result.append((char) (msg.charAt(i) - (26 - shift)));
-                    Log.d(TAG, "caesar: 1 result: " + result.toString());
+        for (int i = 0; i < len; i++){
+            char c_current = (char)(msg.charAt(i));
+            char c_shift = (char)(c_current + shift);
+
+            if (Character.isLetter(c_current)) {
+                if (Character.isUpperCase(c_current)) {
+                    if (c_shift > 'Z') {
+                        result.append((char)(c_current - (26 - shift)));
+                    } else {
+                        result.append(c_shift);
+                    }
                 }
-                else {
-                    result.append((char) (msg.charAt(i) + shift));
-                    Log.d(TAG, "caesar: 2 result: " + result.toString());
+                else if (Character.isLowerCase(c_current)) {
+                    if (c_shift > 'z') {
+                        result.append((char)(c_current - (26 - shift)));
+                    } else {
+                        result.append(c_shift);
+                    }
                 }
             }
             else {
-                result.append(msg.charAt(i));
-                Log.d(TAG, "caesar: 3 result: " + result.toString());
+                result.append(c_current);
             }
-
         }
-        Log.d(TAG, "caesar: final result: " + result.toString());
         return result.toString();
     }
-
 }

@@ -92,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshConvos() {
-        Log.d(TAG, "refreshConvos: starting...");
         ContentResolver contentResolver = getContentResolver();
         Cursor smsInboxCursor = contentResolver.query(Uri.parse("content://sms/inbox"), null, null, null, "date DESC");
 
@@ -102,27 +101,16 @@ public class MainActivity extends AppCompatActivity {
         arrayAdapter.clear();
         threads.clear();
         do {
-            Log.d(TAG, "refreshConvos: looping...");
             if (!threads.contains(smsInboxCursor.getInt(indexThreadID))) {
                 threads.add(smsInboxCursor.getInt(indexThreadID));
                 numbers.add(smsInboxCursor.getString(indexAddress));
                 String str = getContactName(this, smsInboxCursor.getString(indexAddress)) +
                         "\n Thread ID:" + smsInboxCursor.getString(indexThreadID) + "\n";
-                Log.d(TAG, "refreshConvos: adding entry!");
                 arrayAdapter.add(str);
 
             }
 
         } while (smsInboxCursor.moveToNext());
-
-        Cursor smsConvoCursor = contentResolver.query(Uri.parse("content://sms/conversations"), null, null, null, null);
-        if(!smsConvoCursor.moveToFirst()) return;
-        do{
-            Log.d(TAG, "0:" + smsConvoCursor.getString(0) +
-                    "\n1:" + smsConvoCursor.getString(1) +
-                    "\n2:" + smsConvoCursor.getString(2));
-        }while (smsConvoCursor.moveToNext());
-
     }
 
     public static String getContactName(Context context, String phoneNo) {
@@ -265,13 +253,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getMultiplePermissions() {
-        Log.d(TAG, "getMultiplePermissions: Initializing...");
         requestPermissions(new String[]{
                 Manifest.permission.READ_SMS,
                 Manifest.permission.RECEIVE_SMS,
                 Manifest.permission.SEND_SMS,
                 Manifest.permission.READ_CONTACTS}, MULTIPLE_PERMISSIONS_REQUEST);
-        Log.d(TAG, "getMultiplePermissions: Permissions requested");
     }
 
 
@@ -280,7 +266,6 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: grantResults.length = " + grantResults.length);
 
         if (requestCode == MULTIPLE_PERMISSIONS_REQUEST) {
             if(grantResults.length == 4 &&
