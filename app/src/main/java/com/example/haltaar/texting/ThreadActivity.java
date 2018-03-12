@@ -227,8 +227,39 @@ public class ThreadActivity extends AppCompatActivity {
     }
 
     public void onCeasarClick(View view){
-        String msg = input.getText().toString();
-        String msgCrypt = ciphers.caesar(msg, 13);
-        input.setText(msgCrypt);
+
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        View alertView = getLayoutInflater().inflate(R.layout.dialog_caeser, null);
+
+        final NumberPicker alertNumberPicker = (NumberPicker) alertView.findViewById(R.id.numberPicker);
+        alertNumberPicker.setMinValue(1);
+        alertNumberPicker.setMaxValue(26);
+        alertNumberPicker.setValue(13);
+        Button alertButtonOkay = (Button) alertView.findViewById(R.id.buttonOkay);
+        Button alertButtonCancel = (Button) alertView.findViewById(R.id.buttonCancel);
+
+        alertBuilder.setView(alertView);
+        final AlertDialog dialog = alertBuilder.create();
+
+        alertButtonOkay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int shift = (int) alertNumberPicker.getValue();
+                String msg = input.getText().toString();
+                String msgCrypt = ciphers.caesar(msg, shift);
+                input.setText(msgCrypt);
+                dialog.dismiss();
+            }
+        });
+
+        alertButtonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+
+
     }
 }
