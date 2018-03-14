@@ -1,8 +1,13 @@
 package com.example.haltaar.texting;
 
+import android.util.Base64;
 import android.util.Log;
 
 import java.nio.charset.CharsetEncoder;
+import java.security.MessageDigest;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 import static android.content.ContentValues.TAG;
 
@@ -14,7 +19,7 @@ import static android.content.ContentValues.TAG;
 
 public class ciphers {
 
-    private static final String TAG = "ThreadActivity";
+    private static final String TAG = "ciphers";
 
     public static String caesar(String msg, int shift) {
         int len = msg.length();
@@ -50,4 +55,34 @@ public class ciphers {
         }
         return result.toString();
     }
+
+    public static String AESEncrypt(String msg, String password) throws Exception{
+        SecretKeySpec key = generateKey(password);
+        Cipher c = Cipher.getInstance("AES");
+        c.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encryptedBytes = c.doFinal(msg.getBytes());
+        String encryptedString = Base64.encodeToString(encryptedBytes, Base64.DEFAULT);
+        return encryptedString;
+    }
+
+    public static String AESDecrypt(String msg, String password) throws Exception {
+        SecretKeySpec key = generateKey(password);
+        Cipher c = Cipher.getInstance("AES");
+        c.init(Cipher.DECRYPT_MODE, key);
+        byte[] decodedBytes = Base64.decode(msg, Base64.DEFAULT);
+        byte[] decryptedBytes = c.doFinal(decodedBytes);
+        String decryptedString = new String(decryptedBytes);
+        return decryptedString;
+    }
+
+    private static SecretKeySpec generateKey(String password) throws Exception{
+        final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] bytes = password.getBytes("UTF-8");
+        digest.update(bytes, 0, bytes.length);
+        byte[] key = digest.digest();
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+        return secretKeySpec;
+    }
+
+
 }

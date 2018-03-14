@@ -73,57 +73,6 @@ public class ThreadActivity extends AppCompatActivity {
         refreshThread();
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_crypt_context, menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        Log.d(TAG, "onContextItemSelected: init");
-        Log.d(TAG, "onContextItemSelected: item id" + item.getItemId());
-        if (item.getItemId() == 2131165245 ){ //checking that item id is correct for the message list 2131165243
-            Log.d(TAG, "onContextItemSelected: if statement satisfied");
-            final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-
-            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-            View alertView = getLayoutInflater().inflate(R.layout.dialog_caeser, null);
-
-            final NumberPicker alertNumberPicker = (NumberPicker) alertView.findViewById(R.id.numberPicker);
-            alertNumberPicker.setMinValue(1);
-            alertNumberPicker.setMaxValue(26);
-            alertNumberPicker.setValue(13);
-            Button alertButtonOkay = (Button) alertView.findViewById(R.id.buttonOkay);
-            Button alertButtonCancel = (Button) alertView.findViewById(R.id.buttonCancel);
-
-            alertBuilder.setView(alertView);
-            final AlertDialog dialog = alertBuilder.create();
-
-            alertButtonOkay.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int shift = (int) alertNumberPicker.getValue();
-                    smsMessagesList.set(info.position, ciphers.caesar(smsMessagesList.get(info.position), shift));
-                    arrayAdapter.notifyDataSetChanged();
-                    dialog.dismiss();
-                }
-            });
-
-            alertButtonCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
-            dialog.show();
-            return true;
-        }
-        else
-            return false;
-    }
-
     public void onStart() {
         super.onStart();
         inst = this;
@@ -209,16 +158,105 @@ public class ThreadActivity extends AppCompatActivity {
         do {
             if (smsInboxCursor.getInt(indexThreadID) == ThreadID) {
                 if (smsInboxCursor.getInt(9) == 1){ //checking type for sent or received
-                    messageLine = getIntent().getStringExtra("EXTRA_NAME") + ": " + smsInboxCursor.getString(indexBody);
+//                    messageLine = getIntent().getStringExtra("EXTRA_NAME") + ": " + smsInboxCursor.getString(indexBody);
+                    messageLine = smsInboxCursor.getString(indexBody);
+
                 }
                 else if (smsInboxCursor.getInt(9) == 2){
-                    messageLine = "Me: " + smsInboxCursor.getString(indexBody);
+//                    messageLine = "Me: " + smsInboxCursor.getString(indexBody);
+                    messageLine = smsInboxCursor.getString(indexBody);
 
                 }
                 arrayAdapter.insert(messageLine, 0);
 
             }
         } while (smsInboxCursor.moveToNext());
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_crypt_context, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        switch (item.getTitle().toString()) {
+
+            case "Caeser":
+                final AdapterView.AdapterContextMenuInfo infoCaeser = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+                AlertDialog.Builder alertBuilderCaeser = new AlertDialog.Builder(this);
+                View alertViewCaeser = getLayoutInflater().inflate(R.layout.dialog_caeser, null);
+
+                final NumberPicker alertNumberPicker = alertViewCaeser.findViewById(R.id.numberPicker);
+                alertNumberPicker.setMinValue(1);
+                alertNumberPicker.setMaxValue(26);
+                alertNumberPicker.setValue(13);
+                Button caeserButtonOkay = alertViewCaeser.findViewById(R.id.buttonOkay);
+                Button caeserButtonCancel = alertViewCaeser.findViewById(R.id.buttonCancel);
+
+                alertBuilderCaeser.setView(alertViewCaeser);
+                final AlertDialog dialogCaeser = alertBuilderCaeser.create();
+
+                caeserButtonOkay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int shiftCaeser = alertNumberPicker.getValue();
+                        smsMessagesList.set(infoCaeser.position, ciphers.caesar(smsMessagesList.get(infoCaeser.position), shiftCaeser));
+                        arrayAdapter.notifyDataSetChanged();
+                        dialogCaeser.dismiss();
+                    }
+                });
+
+                caeserButtonCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogCaeser.dismiss();
+                    }
+                });
+                dialogCaeser.show();
+                return true;
+
+            case "AES":
+                final AdapterView.AdapterContextMenuInfo infoAES = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+                AlertDialog.Builder alertBuilderAES = new AlertDialog.Builder(this);
+                View alertViewAES = getLayoutInflater().inflate(R.layout.dialog_aes, null);
+                final EditText aesPassword = alertViewAES.findViewById(R.id.editTextPassword);
+                Button aesButtonOkay = alertViewAES.findViewById(R.id.buttonOkay);
+                Button aesButtonCancel = alertViewAES.findViewById(R.id.buttonCancel);
+
+                alertBuilderAES.setView(alertViewAES);
+                final AlertDialog dialogAES = alertBuilderAES.create();
+
+                aesButtonOkay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String passwordAES = aesPassword.getText().toString();
+                        try {
+                            smsMessagesList.set(infoAES.position, ciphers.AESDecrypt(smsMessagesList.get(infoAES.position), passwordAES));
+                        } catch (Exception e) {
+                            Toast.makeText(ThreadActivity.this, "Wrong Password", Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                        }
+                        arrayAdapter.notifyDataSetChanged();
+                        dialogAES.dismiss();
+                    }
+                });
+
+                aesButtonCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogAES.dismiss();
+                    }
+                });
+                dialogAES.show();
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     public void onSendClick(View view) {
@@ -262,4 +300,47 @@ public class ThreadActivity extends AppCompatActivity {
 
 
     }
+
+    public void onAESClick(View view){
+
+        AlertDialog.Builder alertBuilderAES = new AlertDialog.Builder(this);
+        View alertViewAES = getLayoutInflater().inflate(R.layout.dialog_aes, null);
+
+        final EditText aesPassword = alertViewAES.findViewById(R.id.editTextPassword);
+        Button aesButtonOkay = alertViewAES.findViewById(R.id.buttonOkay);
+        Button aesButtonCancel = alertViewAES.findViewById(R.id.buttonCancel);
+
+        alertBuilderAES.setView(alertViewAES);
+        final AlertDialog dialogAES = alertBuilderAES.create();
+
+        aesButtonOkay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String passwordAES = aesPassword.getText().toString();
+                String msg = input.getText().toString();
+                String msgCrypt = "";
+
+
+                try {
+                    msgCrypt = ciphers.AESEncrypt(msg, passwordAES);
+                } catch (Exception e) {
+                    Toast.makeText(ThreadActivity.this, "Wrong Password", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+
+                if (!msgCrypt.equals("")){
+                    input.setText(msgCrypt);
+                }
+                dialogAES.dismiss();
+            }
+        });
+        aesButtonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogAES.dismiss();
+            }
+        });
+        dialogAES.show();
+    }
+//end lol
 }
