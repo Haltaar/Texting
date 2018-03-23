@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
@@ -68,7 +69,11 @@ public class ThreadActivity extends AppCompatActivity {
         deliveredPI = PendingIntent.getBroadcast(this, 0, new Intent(DELIVERED), 0);
         ContactNumber = getIntent().getStringExtra("EXTRA_NUMBER");
         ThreadID = getIntent().getIntExtra("EXTRA_THREAD_ID", 0);
-        setTitle(getIntent().getStringExtra("EXTRA_NAME") + ": " + ContactNumber);
+        String Title = "";
+        Title = getIntent().getStringExtra("EXTRA_NAME");
+        if (Title.equals(""))
+            Title = "New Message";
+        setTitle(Title + ": " + ContactNumber);
 
         refreshThread();
     }
@@ -152,10 +157,15 @@ public class ThreadActivity extends AppCompatActivity {
         Cursor smsInboxCursor = contentResolver.query(Uri.parse("content://sms"), null, null, null, null);
         int indexBody = smsInboxCursor.getColumnIndex("body");
         int indexThreadID = smsInboxCursor.getColumnIndex("thread_id");
+        int indexAddress = smsInboxCursor.getColumnIndex("address");
         String messageLine = "";
         if (indexBody < 0 || !smsInboxCursor.moveToFirst()) return;
         arrayAdapter.clear();
         do {
+            if (ThreadID == 0) //if message is new, there is no thread id until first message is sent
+                if (smsInboxCursor.getString(indexAddress).equals(ContactNumber))
+                    ThreadID = smsInboxCursor.getInt(indexThreadID);
+
             if (smsInboxCursor.getInt(indexThreadID) == ThreadID) {
                 if (smsInboxCursor.getInt(9) == 1){ //checking type for sent or received
 //                    messageLine = getIntent().getStringExtra("EXTRA_NAME") + ": " + smsInboxCursor.getString(indexBody);
@@ -260,8 +270,28 @@ public class ThreadActivity extends AppCompatActivity {
     }
 
     public void onSendClick(View view) {
+        Log.d(TAG, "onSendClick: threadID" + ThreadID);
         String message = input.getText().toString();
-            smsManager.sendTextMessage(ContactNumber, null, message, sentPI  , deliveredPI);
+        smsManager.sendTextMessage(ContactNumber, null, message, sentPI  , deliveredPI);
+
+        if (ThreadID == 0) {
+            ContentResolver contentResolver = getContentResolver();
+            Cursor smsInboxCursor = contentResolver.query(Uri.parse("content://sms/sent"), null, null, null, "date DESC");
+            int indexThreadID = smsInboxCursor.getColumnIndex("thread_id");
+
+            int indexAddress = smsInboxCursor.getColumnIndex("address");
+
+            smsInboxCursor.moveToFirst();
+            Log.d(TAG, "onSendClick: threadid from cursor: " + smsInboxCursor.getInt(indexThreadID));
+            Log.d(TAG, "onSendClick: address from cursor:  " + smsInboxCursor.getString(indexAddress));
+            if (ContactNumber.equals(smsInboxCursor.getString(indexAddress))) {
+                Log.d(TAG, "onSendClick: assigning new threadID");
+                ThreadID = smsInboxCursor.getInt(indexThreadID);
+                Log.d(TAG, "onSendClick: ThreadID: " + ThreadID);
+            }
+        }
+
+        refreshThread();
     }
 
     public void onCeasarClick(View view){

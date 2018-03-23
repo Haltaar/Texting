@@ -2,6 +2,7 @@ package com.example.haltaar.texting;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -13,17 +14,26 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.NumberPicker;
+import android.widget.PopupMenu;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,10 +58,9 @@ public class MainActivity extends AppCompatActivity {
     BroadcastReceiver smsSentReceiver, smsDeliveredReceiver;
 
     private static final String TAG = "MainActivity";
-
-
-
-
+    
+    FloatingActionButton fab;
+    
     public static MainActivity instance() {
         return inst;
     }
@@ -64,6 +73,53 @@ public class MainActivity extends AppCompatActivity {
         convos = (ListView) findViewById(R.id.convos);
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, convoThreads);
         convos.setAdapter(arrayAdapter);
+
+        fab = (FloatingActionButton) findViewById(R.id.addFab);
+        
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: fab pressed");
+
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainActivity.this);
+                View alertView = getLayoutInflater().inflate(R.layout.dialog_new_message, null);
+                final EditText inputNumber = (EditText) alertView.findViewById(R.id.inputNumber);
+
+                Button alertButtonOkay = (Button) alertView.findViewById(R.id.buttonOkay);
+                Button alertButtonCancel = (Button) alertView.findViewById(R.id.buttonCancel);
+
+                alertBuilder.setView(alertView);
+                final AlertDialog dialog = alertBuilder.create();
+
+                alertButtonOkay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "onClick: new thread for: " + inputNumber.getText().toString());
+                        Intent treadIntent = new Intent(getBaseContext(), ThreadActivity.class);
+                        treadIntent.putExtra("EXTRA_THREAD_ID", 0);
+                        treadIntent.putExtra("EXTRA_NUMBER", inputNumber.getText().toString());
+                        treadIntent.putExtra("EXTRA_NAME", getContactName(getBaseContext(),inputNumber.getText().toString()));
+
+                        startActivity(treadIntent);
+                        dialog.dismiss();
+                    }
+                });
+
+                alertButtonCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+
+
+            }
+        });
+
+
+
+
 
         convos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -134,6 +190,58 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_activity_actions, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_info:
+                PopupMenu popup = new PopupMenu(this, findViewById(R.id.action_info));
+                MenuInflater inflater = popup.getMenuInflater();
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.caeser_info:
+                                Intent caeserBrowserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://en.wikipedia.org/wiki/Caesar_cipher"));
+                                startActivity(caeserBrowserIntent);
+                                return true;
+                            case R.id.aes_info:
+                                Intent aesBrowserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://en.wikipedia.org/wiki/Advanced_Encryption_Standard"));
+                                startActivity(aesBrowserIntent);
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                });
+                inflater.inflate(R.menu.info_popup, popup.getMenu());
+                popup.show();                return true;
+
+            case R.id.action_exit:
+                android.os.Process.killProcess(android.os.Process.myPid());
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+
+
+
+    @Override
+    public void onBackPressed() {
+        android.os.Process.killProcess(android.os.Process.myPid());
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         inst = this;
@@ -170,6 +278,14 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Radio Off!", Toast.LENGTH_SHORT).show();
                         break;
                 }
+
+                if (MainActivity.active) {
+                    MainActivity inst = MainActivity.instance();
+                    inst.refreshConvos();
+                } else if (ThreadActivity.active) {
+                    ThreadActivity inst = ThreadActivity.instance();
+                    inst.refreshThread();
+                }
             }
         };
 
@@ -186,11 +302,15 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "SMS Not Delivered!", Toast.LENGTH_SHORT).show();
                         break;
                 }
+
+
             }
         };
 
         registerReceiver(smsSentReceiver, new IntentFilter(SENT));
         registerReceiver(smsDeliveredReceiver, new IntentFilter(DELIVERED));
+
+        refreshConvos();
 
     }
 
