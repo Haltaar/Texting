@@ -17,9 +17,9 @@ import static android.content.ContentValues.TAG;
 
 
 
-public class ciphers {
+public class Ciphers {
 
-    private static final String TAG = "ciphers";
+    private static final String TAG = "Ciphers";
 
     public static String caesar(String msg, int shift) {
         int len = msg.length();
@@ -57,16 +57,19 @@ public class ciphers {
     }
 
     public static String AESEncrypt(String msg, String password) throws Exception{
-        SecretKeySpec key = generateKey(password);
+        SecretKeySpec key = generateAESKey(password);
         Cipher c = Cipher.getInstance("AES");
         c.init(Cipher.ENCRYPT_MODE, key);
+        Log.d(TAG, "AESEncrypt: msg.getBytes = " + msg.getBytes());
         byte[] encryptedBytes = c.doFinal(msg.getBytes());
         String encryptedString = Base64.encodeToString(encryptedBytes, Base64.DEFAULT);
         return encryptedString;
     }
 
     public static String AESDecrypt(String msg, String password) throws Exception {
-        SecretKeySpec key = generateKey(password);
+        Log.d(TAG, "AESDecrypt: msg =  " + msg);
+        Log.d(TAG, "AESDecrypt: password =  " + password);
+        SecretKeySpec key = generateAESKey(password);
         Cipher c = Cipher.getInstance("AES");
         c.init(Cipher.DECRYPT_MODE, key);
         byte[] decodedBytes = Base64.decode(msg, Base64.DEFAULT);
@@ -75,12 +78,18 @@ public class ciphers {
         return decryptedString;
     }
 
-    private static SecretKeySpec generateKey(String password) throws Exception{
+    private static SecretKeySpec generateAESKey(String password) throws Exception{
+        Log.d(TAG, "generateAESKey: password = " + password);
         final MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] bytes = password.getBytes("UTF-8");
+        Log.d(TAG, "generateAESKey: Bytes = " + bytes.toString());
         digest.update(bytes, 0, bytes.length);
         byte[] key = digest.digest();
+        Log.d(TAG, "generateAESKey: digest.digest = " + digest.digest());
+        Log.d(TAG, "generateAESKey: key = " + key.toString());
+
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+        Log.d(TAG, "generateAESKey: secretKeySpec = " + secretKeySpec.toString());
         return secretKeySpec;
     }
 

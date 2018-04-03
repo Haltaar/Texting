@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
@@ -20,16 +19,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.NumberPicker;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -214,7 +209,7 @@ public class ThreadActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         int shiftCaeser = alertNumberPicker.getValue();
-                        smsMessagesList.set(infoCaeser.position, ciphers.caesar(smsMessagesList.get(infoCaeser.position), shiftCaeser));
+                        smsMessagesList.set(infoCaeser.position, Ciphers.caesar(smsMessagesList.get(infoCaeser.position), shiftCaeser));
                         arrayAdapter.notifyDataSetChanged();
                         dialogCaeser.dismiss();
                     }
@@ -245,7 +240,7 @@ public class ThreadActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         String passwordAES = aesPassword.getText().toString();
                         try {
-                            smsMessagesList.set(infoAES.position, ciphers.AESDecrypt(smsMessagesList.get(infoAES.position), passwordAES));
+                            smsMessagesList.set(infoAES.position, Ciphers.AESDecrypt(smsMessagesList.get(infoAES.position), passwordAES));
                         } catch (Exception e) {
                             Toast.makeText(ThreadActivity.this, "Wrong Password", Toast.LENGTH_SHORT).show();
                             e.printStackTrace();
@@ -314,7 +309,7 @@ public class ThreadActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int shift = (int) alertNumberPicker.getValue();
                 String msg = input.getText().toString();
-                String msgCrypt = ciphers.caesar(msg, shift);
+                String msgCrypt = Ciphers.caesar(msg, shift);
                 input.setText(msgCrypt);
                 dialog.dismiss();
             }
@@ -352,7 +347,7 @@ public class ThreadActivity extends AppCompatActivity {
 
 
                 try {
-                    msgCrypt = ciphers.AESEncrypt(msg, passwordAES);
+                    msgCrypt = Ciphers.AESEncrypt(msg, passwordAES);
                 } catch (Exception e) {
                     Toast.makeText(ThreadActivity.this, "Wrong Password", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
