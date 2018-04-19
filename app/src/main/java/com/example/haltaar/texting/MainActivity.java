@@ -3,6 +3,8 @@ package com.example.haltaar.texting;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -12,10 +14,12 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,6 +41,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+    private Boolean PERMISSIONS = false;
 
     ArrayList<String> convoThreads = new ArrayList<>();
     ArrayList<Integer> threads = new ArrayList<>();
@@ -57,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
     PendingIntent sentPI, deliveredPI;
     BroadcastReceiver smsSentReceiver, smsDeliveredReceiver;
 
+    String channel_ID = "CipherText";
+
     private static final String TAG = "MainActivity";
     
     FloatingActionButton fab;
@@ -67,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_main);
 
         convos = (ListView) findViewById(R.id.convos);
@@ -75,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         convos.setAdapter(arrayAdapter);
 
         fab = (FloatingActionButton) findViewById(R.id.addFab);
-        
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,11 +122,8 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
+
         });
-
-
-
-
 
         convos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -136,15 +140,17 @@ public class MainActivity extends AppCompatActivity {
         sentPI = PendingIntent.getBroadcast(this, 0, new Intent(SENT), 0);
         deliveredPI = PendingIntent.getBroadcast(this, 0, new Intent(DELIVERED), 0);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED &&
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "onCreate: permissions not granted, requesting permissions");
             getMultiplePermissions();
         } else {
+            PERMISSIONS = true;
             refreshConvos();
         }
+
+        super.onCreate(savedInstanceState);
     }
 
     public void refreshConvos() {
@@ -160,8 +166,7 @@ public class MainActivity extends AppCompatActivity {
             if (!threads.contains(smsInboxCursor.getInt(indexThreadID))) {
                 threads.add(smsInboxCursor.getInt(indexThreadID));
                 numbers.add(smsInboxCursor.getString(indexAddress));
-                String str = getContactName(this, smsInboxCursor.getString(indexAddress)) +
-                        "\n Thread ID:" + smsInboxCursor.getString(indexThreadID) + "\n";
+                String str = getContactName(this, smsInboxCursor.getString(indexAddress));
                 arrayAdapter.add(str);
 
             }
@@ -233,9 +238,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
-
     @Override
     public void onBackPressed() {
         android.os.Process.killProcess(android.os.Process.myPid());
@@ -278,13 +280,14 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Radio Off!", Toast.LENGTH_SHORT).show();
                         break;
                 }
-
-                if (MainActivity.active) {
-                    MainActivity inst = MainActivity.instance();
-                    inst.refreshConvos();
-                } else if (ThreadActivity.active) {
-                    ThreadActivity inst = ThreadActivity.instance();
-                    inst.refreshThread();
+                if (PERMISSIONS == true) {
+                    if (MainActivity.active) {
+                        MainActivity inst = MainActivity.instance();
+                        inst.refreshConvos();
+                    } else if (ThreadActivity.active) {
+                        ThreadActivity inst = ThreadActivity.instance();
+                        inst.refreshThread();
+                    }
                 }
             }
         };
@@ -309,9 +312,6 @@ public class MainActivity extends AppCompatActivity {
 
         registerReceiver(smsSentReceiver, new IntentFilter(SENT));
         registerReceiver(smsDeliveredReceiver, new IntentFilter(DELIVERED));
-
-        refreshConvos();
-
     }
 
     @Override
@@ -322,54 +322,6 @@ public class MainActivity extends AppCompatActivity {
 
         unregisterReceiver(smsDeliveredReceiver);
         unregisterReceiver(smsSentReceiver);
-    }
-
-    public void getPermissionToReadSMS() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (shouldShowRequestPermissionRationale(
-                    Manifest.permission.READ_SMS)) {
-                Toast.makeText(this, "Please allow permission!", Toast.LENGTH_SHORT).show();
-            }
-            requestPermissions(new String[]{Manifest.permission.READ_SMS},
-                    READ_SMS_PERMISSIONS_REQUEST);
-        }
-    }
-
-    public void getPermissionToReceiveSMS() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (shouldShowRequestPermissionRationale(
-                    Manifest.permission.RECEIVE_SMS)) {
-                Toast.makeText(this, "Please allow permission!", Toast.LENGTH_SHORT).show();
-            }
-            requestPermissions(new String[]{Manifest.permission.RECEIVE_SMS},
-                    RECEIVE_SMS_PERMISSIONS_REQUEST);
-        }
-    }
-
-    public void getPermissionToSendSMS() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (shouldShowRequestPermissionRationale(
-                    Manifest.permission.SEND_SMS)) {
-                Toast.makeText(this, "Please allow permission!", Toast.LENGTH_SHORT).show();
-            }
-            requestPermissions(new String[]{Manifest.permission.SEND_SMS},
-                    SEND_SMS_PERMISSIONS_REQUEST);
-        }
-    }
-
-    public void getPermissionToReadContacts() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (shouldShowRequestPermissionRationale(
-                    Manifest.permission.READ_CONTACTS)) {
-                Toast.makeText(this, "Please allow permission!", Toast.LENGTH_SHORT).show();
-            }
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
-                    READ_CONTACTS_PERMISSION_REQUEST);
-        }
     }
 
     public void getMultiplePermissions() {

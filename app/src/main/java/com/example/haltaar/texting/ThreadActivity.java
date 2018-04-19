@@ -153,6 +153,7 @@ public class ThreadActivity extends AppCompatActivity {
         int indexBody = smsInboxCursor.getColumnIndex("body");
         int indexThreadID = smsInboxCursor.getColumnIndex("thread_id");
         int indexAddress = smsInboxCursor.getColumnIndex("address");
+        int indexType = smsInboxCursor.getColumnIndex("type");
         String messageLine = "";
         if (indexBody < 0 || !smsInboxCursor.moveToFirst()) return;
         arrayAdapter.clear();
@@ -162,13 +163,13 @@ public class ThreadActivity extends AppCompatActivity {
                     ThreadID = smsInboxCursor.getInt(indexThreadID);
 
             if (smsInboxCursor.getInt(indexThreadID) == ThreadID) {
-                if (smsInboxCursor.getInt(9) == 1){ //checking type for sent or received
-//                    messageLine = getIntent().getStringExtra("EXTRA_NAME") + ": " + smsInboxCursor.getString(indexBody);
+                if (smsInboxCursor.getInt(indexType) == 1){ //checking type for sent or received
+                    messageLine = getIntent().getStringExtra("EXTRA_NAME") + ": " + smsInboxCursor.getString(indexBody);
                     messageLine = smsInboxCursor.getString(indexBody);
 
                 }
-                else if (smsInboxCursor.getInt(9) == 2){
-//                    messageLine = "Me: " + smsInboxCursor.getString(indexBody);
+                else if (smsInboxCursor.getInt(indexType) == 2){
+                    messageLine = "Me: " + smsInboxCursor.getString(indexBody);
                     messageLine = smsInboxCursor.getString(indexBody);
 
                 }
@@ -265,7 +266,7 @@ public class ThreadActivity extends AppCompatActivity {
     }
 
     public void onSendClick(View view) {
-        Log.d(TAG, "onSendClick: threadID" + ThreadID);
+        Toast.makeText(getApplicationContext(), "Sending message...", Toast.LENGTH_SHORT).show();
         String message = input.getText().toString();
         smsManager.sendTextMessage(ContactNumber, null, message, sentPI  , deliveredPI);
 
@@ -285,7 +286,6 @@ public class ThreadActivity extends AppCompatActivity {
                 Log.d(TAG, "onSendClick: ThreadID: " + ThreadID);
             }
         }
-
         refreshThread();
     }
 
@@ -367,5 +367,4 @@ public class ThreadActivity extends AppCompatActivity {
         });
         dialogAES.show();
     }
-//end lol
 }

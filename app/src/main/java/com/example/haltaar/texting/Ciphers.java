@@ -1,15 +1,10 @@
 package com.example.haltaar.texting;
 
 import android.util.Base64;
-import android.util.Log;
-
-import java.nio.charset.CharsetEncoder;
 import java.security.MessageDigest;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by haltaar on 26/02/18.
@@ -60,15 +55,12 @@ public class Ciphers {
         SecretKeySpec key = generateAESKey(password);
         Cipher c = Cipher.getInstance("AES");
         c.init(Cipher.ENCRYPT_MODE, key);
-        Log.d(TAG, "AESEncrypt: msg.getBytes = " + msg.getBytes());
         byte[] encryptedBytes = c.doFinal(msg.getBytes());
         String encryptedString = Base64.encodeToString(encryptedBytes, Base64.DEFAULT);
         return encryptedString;
     }
 
     public static String AESDecrypt(String msg, String password) throws Exception {
-        Log.d(TAG, "AESDecrypt: msg =  " + msg);
-        Log.d(TAG, "AESDecrypt: password =  " + password);
         SecretKeySpec key = generateAESKey(password);
         Cipher c = Cipher.getInstance("AES");
         c.init(Cipher.DECRYPT_MODE, key);
@@ -79,17 +71,12 @@ public class Ciphers {
     }
 
     private static SecretKeySpec generateAESKey(String password) throws Exception{
-        Log.d(TAG, "generateAESKey: password = " + password);
         final MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] bytes = password.getBytes("UTF-8");
-        Log.d(TAG, "generateAESKey: Bytes = " + bytes.toString());
         digest.update(bytes, 0, bytes.length);
         byte[] key = digest.digest();
-        Log.d(TAG, "generateAESKey: digest.digest = " + digest.digest());
-        Log.d(TAG, "generateAESKey: key = " + key.toString());
 
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
-        Log.d(TAG, "generateAESKey: secretKeySpec = " + secretKeySpec.toString());
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, 0,key.length , "AES");
         return secretKeySpec;
     }
 

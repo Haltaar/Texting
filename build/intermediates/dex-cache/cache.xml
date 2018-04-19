@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/9.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="646a3ccb19c4c4a65234e723024eb156d8c95cc3">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/9.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/12.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="8894eaf3ad90c58cc8a1b32f447656194d559453">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/12.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/11.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="cd1ac7bb8c5b8308671b34328fe141e7b3973d8d">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/11.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/3.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="89cafc58e40b6c6bf4f30620e48a5499c30532c1">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/3.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/6.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="4aca07c749afa56a68ccf05e83570f464bbc10b4">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/6.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/18.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="aad1abcaf53411a19b3c538656771ab3797106a1">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/18.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/14.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="92d788b658c80b21f1c838b1003e0af6bd70a1c1">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/14.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/15.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="1daec1a24a913057311b77127ce1969c724767ed">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/15.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/2.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="02ab3c842f30f7e0907ed422a1279d4426ec4203">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/2.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/13.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="581f740328e8f80438d9af31a2abee6e64437508">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/13.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/7.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="a921effadce74f723f22a01d93f603f70b6286f3">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/7.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/4.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="d1253897d3456f7fda5fe06800dd9331af8e6792">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/4.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/5.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="b27a7a34791cd90b536255baf816ab3559823ba7">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/5.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/16.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="2cce1edf674299569566f6961bca5352bd512ea7">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/16.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/1.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="2f9e97163d8df0348787b30aabefb9175182eb89">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/1.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/17.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="445108ef35183b37885d5ca832eaff840c95d757">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/17.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/10.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="f1eb52ab39a98c946ac6939b258f07962a4ce1b3">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/10.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/desugar/release/8.jar"
+        jumboMode="false"
+        min-sdk-version="23"
+        optimize="true"
+        revision="26.0.2"
+        sha1="e70bb91d0f2a6a210603265f464de009433b2818">
+        <dex dex="/home/haltaar/IMAT3451/Texting/app/build/intermediates/transforms/preDex/release/8.jar" />
+    </item>
+
+</items>
